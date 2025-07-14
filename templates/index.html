@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Letter Generation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <header class="bg-primary text-white py-4 mb-4">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="mb-0">
+                            <i class="fas fa-file-alt me-2"></i>
+                            Cover Letter Generation System
+                        </h1>
+                        <p class="mb-0 mt-2">Powered by LangGraph & FastAPI</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <span class="badge bg-success fs-6">
+                            <i class="fas fa-robot me-1"></i>
+                            AI-Powered
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Progress Steps -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="progress-steps">
+                        <div class="step active" id="step1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Job Information</div>
+                        </div>
+                        <div class="step" id="step2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Generate Letter</div>
+                        </div>
+                        <div class="step" id="step3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Download</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Form -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow">
+                        <div class="card-header bg-light">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-briefcase me-2"></i>
+                                Job Application Details
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="coverLetterForm">
+                                <!-- Company Information -->
+                                <div class="mb-4">
+                                    <label for="companyName" class="form-label">
+                                        <i class="fas fa-building me-1"></i>
+                                        Company Name *
+                                    </label>
+                                    <input type="text" class="form-control" id="companyName" name="company_name" required>
+                                    <div class="form-text">Enter the name of the company you're applying to</div>
+                                </div>
+
+                                <!-- Job Title -->
+                                <div class="mb-4">
+                                    <label for="jobTitle" class="form-label">
+                                        <i class="fas fa-user-tie me-1"></i>
+                                        Job Title *
+                                    </label>
+                                    <input type="text" class="form-control" id="jobTitle" name="job_title" required>
+                                    <div class="form-text">Enter the exact job title from the posting</div>
+                                </div>
+
+                                <!-- Job Description -->
+                                <div class="mb-4">
+                                    <label for="jobDescription" class="form-label">
+                                        <i class="fas fa-clipboard-list me-1"></i>
+                                        Job Description *
+                                    </label>
+                                    <textarea class="form-control" id="jobDescription" name="job_description" rows="8" required></textarea>
+                                    <div class="form-text">Paste the complete job description here</div>
+                                </div>
+
+                                <!-- Generate Button -->
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg" id="generateBtn">
+                                        <i class="fas fa-magic me-2"></i>
+                                        Generate Cover Letter
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <!-- Resume Info -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-user me-2"></i>
+                                Resume Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="resume-info">
+                                <p><strong>Name:</strong> Ethan Xin</p>
+                                <p><strong>Education:</strong> B.S. Computational Neuroscience (minor in AI)</p>
+                                <p><strong>University:</strong> Carnegie Mellon University</p>
+                                <p><strong>Skills:</strong> Python, ML, AI Systems, LangChain</p>
+                            </div>
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Using pre-loaded resume information
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- How it Works -->
+                    <div class="card shadow">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-cogs me-2"></i>
+                                How It Works
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="how-it-works">
+                                <div class="step-item">
+                                    <i class="fas fa-search text-primary"></i>
+                                    <span>Research company information</span>
+                                </div>
+                                <div class="step-item">
+                                    <i class="fas fa-puzzle-piece text-success"></i>
+                                    <span>Match experience to job requirements</span>
+                                </div>
+                                <div class="step-item">
+                                    <i class="fas fa-file-word text-warning"></i>
+                                    <span>Generate personalized cover letter</span>
+                                </div>
+                                <div class="step-item">
+                                    <i class="fas fa-download text-info"></i>
+                                    <span>Download as Word document</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="row mt-4" id="resultsSection" style="display: none;">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-header bg-success text-white">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Cover Letter Generated Successfully!
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div id="letterPreview" class="letter-preview"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="download-section">
+                                        <h5>Download Options</h5>
+                                        <button class="btn btn-primary btn-lg w-100 mb-3" id="downloadBtn">
+                                            <i class="fas fa-download me-2"></i>
+                                            Download Word Document
+                                        </button>
+                                        <div class="stats">
+                                            <p><strong>Word Count:</strong> <span id="wordCount">-</span></p>
+                                            <p><strong>Generated:</strong> <span id="generatedTime">-</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-4">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h5>Generating Your Cover Letter</h5>
+                    <p class="mb-0">This may take a few moments...</p>
+                    <div class="progress mt-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>
+
