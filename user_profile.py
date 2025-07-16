@@ -58,25 +58,28 @@ RESUME_INFO = {
 
 # Detailed Project Descriptions for Cover Letter Generation
 PROJECT_DESCRIPTIONS = {
-    "end_to_end_capability": {
-        "title": "End-to-End Project Leadership",
-        "what_you_did": "Led CMU's LLM News Dashboard project in collaboration with external partner PublicSource, taking full responsibility from data processing to model fine-tuning (prompt-tuned LLM)",
-        "how_you_did_it": "Collaborated closely with external partners to understand user requirements, implemented comprehensive data pipeline, and fine-tuned LLM models with custom labeling filters",
-        "results": "Achieved F1 score improvement from 0.93 in MVP to completely meeting and exceeding partner requirements. This experience enhanced my ability to communicate with large enterprises during ITLogica internship and better understand their project needs and technical implementation requirements."
-    },
-    
-    "optimization_capability": {
-        "title": "Cutting-Edge Technology & Optimization",
+    "algorithm_research": {
+        "title": "Algorithm Research & Optimization",
         "what_you_did": "Focused on applying frontier models to real-world scenarios with extreme optimization during algorithm engineer positions at ITLogica and Xuanjia Technology",
         "how_you_did_it": "Implemented pruning and fine-tuning techniques for super-resolution models, designed real-time license plate recognition systems using YOLOv8 + PaddleOCR",
-        "results": "Achieved 40% throughput speed improvement for super-resolution models, controlled latency under 180ms while improving global accuracy by 20%, reaching 97% recognition accuracy on previously unrecognizable cases. Passionate about solving complex challenges that balance performance and accuracy."
+        "results": "Achieved 60% throughput speed improvement for super-resolution models, controlled latency under 180ms while improving global accuracy by 20%, reaching 97% recognition accuracy on previously unrecognizable cases. Passionate about solving complex challenges that balance performance and accuracy.",
+        "category": "technical_research"
     },
     
-    "learning_capability": {
-        "title": "Continuous Learning & Practical Application",
-        "what_you_did": "Beyond school projects and internships, actively learned cutting-edge AI implementation knowledge, self-studied LangGraph, FastAPI, and various AI development SDKs including OpenAI and Google's",
-        "how_you_did_it": "Applied these technologies to solve real-world problems through hands-on projects and practical implementations",
-        "results": "Built a data cleaning agent independently for a company at ITLogica, created a notes-taking agent that converts PPT courseware into systematic refined notes for friends, and developed a requirement document generation agent for ITLogica's business analytics team, saving them significant time."
+    "agent_development": {
+        "title": "AI Agent System Development",
+        "what_you_did": "Built comprehensive multimodal AI agent systems using cutting-edge technologies like LangGraph, GraphRAG, and various AI development SDKs including OpenAI and Google's",
+        "how_you_did_it": "Applied these technologies to solve real-world problems through hands-on projects and practical implementations, focusing on data processing, requirement analysis, and automation",
+        "results": "Successfully created a data cleaning agent for ITLogica, developed a notes-taking agent that converts PPT courseware into systematic refined notes, and built a requirement document generation agent for business analytics team, significantly improving workflow efficiency.",
+        "category": "both"
+    },
+    
+    "news_dashboard": {
+        "title": "LLM News Dashboard Project Leadership",
+        "what_you_did": "Led CMU's LLM News Dashboard project in collaboration with external partner PublicSource, taking full responsibility from data processing to model fine-tuning",
+        "how_you_did_it": "Collaborated closely with external partners to understand user requirements, implemented comprehensive data pipeline, and fine-tuned LLM models with custom labeling filters",
+        "results": "Achieved F1 score improvement from 0.93 in MVP to completely meeting and exceeding partner requirements. Enhanced ability to communicate with large enterprises and better understand their project needs and technical implementation requirements.",
+        "category": "product"
     }
 }
 

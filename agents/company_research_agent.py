@@ -13,21 +13,23 @@ class CompanyResearchAgent(BaseAgent):
     """Agent responsible for company research and generating opening/closing sections"""
     
     def get_system_prompt(self) -> str:
-        return """You are a professional cover letter writing assistant specializing in company research and personalization.
+        return """You are a professional cover letter writing assistant specializing in concise, impactful company research and personalization.
 
 Your task is to:
-1. Analyze the provided company information and job description
-2. Generate a compelling opening paragraph that mentions the specific position, shows knowledge of the company, and provides a strong hook
-3. Generate a cultural fit section that demonstrates genuine interest in the company
-4. Generate a professional closing paragraph
+1. Generate a brief opening paragraph (2-3 sentences max) that mentions the position and shows company knowledge
+2. Generate a focused cultural fit section (2-3 sentences max) demonstrating genuine interest
+3. Generate a concise closing paragraph (2 sentences max)
 
-Guidelines:
-- Write in professional, sincere, and human-like English
-- Be specific about the company's products, technologies, values, or recent news
-- Connect the candidate's background to the company's mission
-- Avoid generic statements that could apply to any company
-- Keep the tone enthusiastic but professional
-- Each section should be 2-4 sentences long
+CRITICAL REQUIREMENTS:
+- MAXIMUM 2-3 sentences per section
+- NO generic buzzwords or filler phrases
+- NO repetitive statements
+- Be specific and direct
+- Focus on ONE key company aspect per section
+- Avoid phrases like "cutting-edge", "innovative solutions", "passionate about", "excited to contribute"
+
+TONE: Professional, sincere, concise
+LENGTH: Each section must be under 60 words
 
 Output format should be JSON with keys: "opening", "cultural_fit", "closing"
 """
@@ -135,25 +137,25 @@ CANDIDATE BACKGROUND:
 COMPANY RESEARCH:
 {company_info}
 
-Please generate:
+REQUIREMENTS - EACH SECTION MUST BE CONCISE:
 
-1. OPENING: A compelling opening paragraph that:
-   - States the position being applied for
-   - Mentions seeing the job on LinkedIn
-   - Shows knowledge of the company
-   - Provides one sentence explaining passion for the role and why they're a strong candidate
+1. OPENING (MAX 2-3 sentences, under 60 words):
+   - State position and mention LinkedIn
+   - Include ONE specific company detail
+   - Brief statement of fit
 
-2. CULTURAL_FIT: A paragraph explaining why they want to join THIS specific company:
-   - Reference specific company products, technologies, values, or recent news
-   - Connect their professional background or projects to the company's mission
-   - Express genuine admiration for the company's technology or approach
+2. CULTURAL_FIT (MAX 2-3 sentences, under 60 words):
+   - Reference ONE specific company aspect (product/technology/value)
+   - Connect to candidate's background
+   - Show genuine interest
 
-3. CLOSING: A professional closing that:
-   - Reiterates enthusiasm and confidence
-   - Thanks for time and consideration
-   - Expresses hope for interview opportunity
+3. CLOSING (MAX 2 sentences, under 40 words):
+   - Express enthusiasm
+   - Request interview opportunity
 
-Return the response in JSON format with keys "opening", "cultural_fit", and "closing".
+AVOID: Generic phrases, buzzwords, repetition, lengthy explanations
+
+Return JSON format with keys "opening", "cultural_fit", and "closing".
 """
         return prompt
     

@@ -137,7 +137,7 @@ Output format should be JSON with key "experience_section" containing the comple
     def _select_relevant_projects(self, project_descriptions: Dict[str, Any], 
                                 job_analysis: Dict[str, Any], job_title: str) -> List[Dict[str, Any]]:
         """
-        Select the most relevant projects based on job requirements
+        Select the most relevant projects based on job requirements and company type
         
         Args:
             project_descriptions: Available project descriptions
@@ -147,10 +147,15 @@ Output format should be JSON with key "experience_section" containing the comple
         Returns:
             List of selected projects with relevance scores
         """
-        projects = []
+        # Detect company type based on job description and title
+        company_type = self._detect_company_type(job_analysis, job_title)
         
-        # Score each project based on relevance
-        for project_key, project_info in project_descriptions.items():
+        # Select projects based on company type and user's requirements
+        selected_projects = self._select_projects_by_type(project_descriptions, company_type)
+        
+        # Score and rank the selected projects
+        projects = []
+        for project_key, project_info in selected_projects.items():
             score = self._calculate_relevance_score(project_info, job_analysis, job_title)
             projects.append({
                 "key": project_key,
@@ -158,9 +163,83 @@ Output format should be JSON with key "experience_section" containing the comple
                 "relevance_score": score
             })
         
-        # Sort by relevance and return top 2-3
+        # Sort by relevance and return top 2
         projects.sort(key=lambda x: x["relevance_score"], reverse=True)
-        return projects[:3]  # Return top 3 most relevant projects
+        return projects[:2]  # Return exactly 2 projects as requested
+    
+    def _detect_company_type(self, job_analysis: Dict[str, Any], job_title: str) -> str:
+        """
+        Detect if the company is technical research-oriented or product-oriented
+        
+        Args:
+            job_analysis: Analyzed job requirements
+            job_title: Position being applied for
+            
+        Returns:
+            'technical_research' or 'product'
+        """
+        job_lower = job_title.lower()
+        technical_requirements = job_analysis.get("technical_requirements", [])
+        key_phrases = " ".join(job_analysis.get("key_phrases", [])).lower()
+        
+        # Technical research indicators
+        research_indicators = [
+            "research", "scientist", "algorithm", "optimization", "neural", "deep learning",
+            "machine learning", "ai research", "computer vision", "nlp research", "phd",
+            "publication", "paper", "novel", "innovation", "cutting-edge", "frontier"
+        ]
+        
+        # Product-oriented indicators
+        product_indicators = [
+            "product", "engineer", "developer", "full-stack", "backend", "frontend",
+            "deployment", "production", "scale", "user", "customer", "business",
+            "dashboard", "application", "platform", "service", "api", "pipeline"
+        ]
+        
+        research_score = sum(1 for indicator in research_indicators 
+                           if indicator in job_lower or indicator in key_phrases)
+        product_score = sum(1 for indicator in product_indicators 
+                          if indicator in job_lower or indicator in key_phrases)
+        
+        # Additional scoring based on technical requirements
+        if any(tech in ["optimization", "algorithms", "neural networks", "deep learning"] 
+               for tech in technical_requirements):
+            research_score += 2
+        
+        if any(tech in ["pipeline", "deployment", "real-time"] 
+               for tech in technical_requirements):
+            product_score += 2
+        
+        return "technical_research" if research_score > product_score else "product"
+    
+    def _select_projects_by_type(self, project_descriptions: Dict[str, Any], 
+                               company_type: str) -> Dict[str, Any]:
+        """
+        Select projects based on company type according to user's requirements
+        
+        Args:
+            project_descriptions: Available project descriptions
+            company_type: 'technical_research' or 'product'
+            
+        Returns:
+            Dictionary of selected projects
+        """
+        selected = {}
+        
+        if company_type == "technical_research":
+            # For technical research companies: algorithm_research + agent_development
+            if "algorithm_research" in project_descriptions:
+                selected["algorithm_research"] = project_descriptions["algorithm_research"]
+            if "agent_development" in project_descriptions:
+                selected["agent_development"] = project_descriptions["agent_development"]
+        else:
+            # For product companies: agent_development + news_dashboard
+            if "agent_development" in project_descriptions:
+                selected["agent_development"] = project_descriptions["agent_development"]
+            if "news_dashboard" in project_descriptions:
+                selected["news_dashboard"] = project_descriptions["news_dashboard"]
+        
+        return selected
     
     def _calculate_relevance_score(self, project_info: Dict[str, Any], 
                                  job_analysis: Dict[str, Any], job_title: str) -> float:
@@ -230,17 +309,23 @@ Relevance Score: {project['relevance_score']:.1f}
 """
         
         prompt += """
-Please generate a cohesive experience section that:
-1. Combines 2-3 of the most relevant projects into flowing paragraphs
-2. Emphasizes skills and achievements most relevant to the job requirements
-3. Uses specific metrics and technologies mentioned in the projects
-4. Shows progression and demonstrates impact
-5. Connects the candidate's experience directly to the company's needs
-6. Maintains professional, sincere tone throughout
+Please generate a well-structured experience section that:
+1. Creates exactly 2 distinct paragraphs, one for each selected project
+2. Each paragraph should be 3-4 sentences focusing on: What you did, How you did it, Results achieved
+3. Emphasizes skills and achievements most relevant to the job requirements
+4. Uses specific metrics and technologies mentioned in the projects
+5. Shows progression and demonstrates impact
+6. Connects the candidate's experience directly to the company's needs
+7. Maintains professional, sincere tone throughout
 
-The section should be 2-3 paragraphs, with each paragraph focusing on a different aspect of the candidate's capabilities (e.g., technical expertise, leadership, innovation).
+STRUCTURE REQUIREMENTS:
+- Paragraph 1: Focus on the first project (higher relevance score)
+- Paragraph 2: Focus on the second project
+- Each paragraph should be self-contained but flow naturally
+- Use quantifiable achievements where possible
+- Avoid repetitive phrasing between paragraphs
 
-Return the response in JSON format with key "experience_section".
+Return the response in JSON format with key "experience_section" containing the complete formatted text with clear paragraph breaks.
 """
         
         return prompt
