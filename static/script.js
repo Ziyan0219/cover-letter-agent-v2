@@ -12,8 +12,15 @@ function initializeApp() {
     const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
     const resultsSection = document.getElementById('resultsSection');
     
+    // Load profiles on page load
+    loadProfiles();
+    
     // Form submission handler
     form.addEventListener('submit', handleFormSubmission);
+    
+    // Profile selection handler
+    const profileSelect = document.getElementById('profileSelect');
+    profileSelect.addEventListener('change', handleProfileSelection);
     
     // Company name input handler for real-time research
     const companyNameInput = document.getElementById('companyName');
@@ -27,6 +34,72 @@ function initializeApp() {
             }
         }, 1000);
     });
+}
+
+async function loadProfiles() {
+    try {
+        const response = await fetch('/api/profiles');
+        const data = await response.json();
+        
+        const profileSelect = document.getElementById('profileSelect');
+        
+        if (data.success && data.profiles.length > 0) {
+            profileSelect.innerHTML = '<option value="">Select a profile...</option>';
+            
+            data.profiles.forEach(profile => {
+                const option = document.createElement('option');
+                option.value = profile.id;
+                option.textContent = profile.name;
+                if (profile.is_default) {
+                    option.selected = true;
+                }
+                profileSelect.appendChild(option);
+            });
+            
+            // Load default profile info if available
+            const defaultProfile = data.profiles.find(p => p.is_default);
+            if (defaultProfile) {
+                loadProfileInfo(defaultProfile.id);
+            }
+        } else {
+            profileSelect.innerHTML = '<option value="">No profiles available</option>';
+            showAlert('No profiles found. Please create a profile first.', 'warning');
+        }
+    } catch (error) {
+        console.error('Error loading profiles:', error);
+        showAlert('Failed to load profiles', 'danger');
+    }
+}
+
+async function handleProfileSelection(event) {
+    const profileId = event.target.value;
+    if (profileId) {
+        await loadProfileInfo(profileId);
+    } else {
+        document.getElementById('resumeInfo').innerHTML = '<p class="text-muted">Select a profile to view information</p>';
+    }
+}
+
+async function loadProfileInfo(profileId) {
+    try {
+        const response = await fetch(`/api/profiles/${profileId}`);
+        const data = await response.json();
+        
+        if (data.success && data.profile) {
+            const resumeInfo = data.profile.RESUME_INFO;
+            const resumeInfoDiv = document.getElementById('resumeInfo');
+            
+            resumeInfoDiv.innerHTML = `
+                <p><strong>Name:</strong> ${resumeInfo.name}</p>
+                <p><strong>Email:</strong> ${resumeInfo.email}</p>
+                <p><strong>Education:</strong> ${resumeInfo.education.degree}</p>
+                <p><strong>University:</strong> ${resumeInfo.education.university}</p>
+                <p><strong>Skills:</strong> ${resumeInfo.core_skills.slice(0, 2).join(', ').substring(0, 100)}...</p>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading profile info:', error);
+    }
 }
 
 async function handleFormSubmission(event) {

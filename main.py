@@ -16,7 +16,8 @@ import PyPDF2
 import json
 
 from agents.langgraph_orchestrator import LangGraphOrchestrator
-from user_profile import RESUME_INFO, PROJECT_DESCRIPTIONS
+from user_profile import PROFILES
+from profile_manager import profile_manager
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -87,23 +88,138 @@ async def upload_resume(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
 
 
+@app.get("/profiles", response_class=HTMLResponse)
+async def profiles_page(request: Request):
+    """Profile management page"""
+    return templates.TemplateResponse("profile_manager.html", {"request": request})
+
+
+@app.get("/api/profiles")
+async def list_profiles():
+    """Get all profiles"""
+    try:
+        profiles = profile_manager.list_profiles()
+        return {
+            "success": True,
+            "profiles": profiles
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "profiles": []
+        }
+
+
+@app.get("/api/profiles/{profile_id}")
+async def get_profile(profile_id: str):
+    """Get a specific profile"""
+    try:
+        profile_data = profile_manager.get_profile(profile_id)
+        if profile_data:
+            return {
+                "success": True,
+                "profile": profile_data
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Profile not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving profile: {str(e)}")
+
+
+@app.post("/api/profiles")
+async def create_profile(profile_data: dict):
+    """Create a new profile"""
+    try:
+        profile_id = profile_manager.create_profile(profile_data)
+        return {
+            "success": True,
+            "profile_id": profile_id,
+            "message": "Profile created successfully"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating profile: {str(e)}")
+
+
+@app.put("/api/profiles/{profile_id}")
+async def update_profile(profile_id: str, profile_data: dict):
+    """Update an existing profile"""
+    try:
+        success = profile_manager.update_profile(profile_id, profile_data)
+        if success:
+            return {
+                "success": True,
+                "message": "Profile updated successfully"
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Profile not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating profile: {str(e)}")
+
+
+@app.delete("/api/profiles/{profile_id}")
+async def delete_profile(profile_id: str):
+    """Delete a profile"""
+    try:
+        success = profile_manager.delete_profile(profile_id)
+        if success:
+            return {
+                "success": True,
+                "message": "Profile deleted successfully"
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Profile not found or cannot be deleted")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting profile: {str(e)}")
+
+
+@app.post("/api/profiles/{profile_id}/set-default")
+async def set_default_profile(profile_id: str):
+    """Set a profile as default"""
+    try:
+        success = profile_manager.set_default_profile(profile_id)
+        if success:
+            return {
+                "success": True,
+                "message": "Default profile updated successfully"
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Profile not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error setting default profile: {str(e)}")
+
+
 @app.post("/generate-cover-letter")
 async def generate_cover_letter(
     company_name: str = Form(...),
     job_title: str = Form(...),
     job_description: str = Form(...),
+    profile_id: str = Form(...),
     resume_file: Optional[str] = Form(None)
 ):
     """Generate a cover letter using the LangGraph system"""
     
     try:
+        # Get profile data
+        profile_data = profile_manager.get_profile_for_generation(profile_id)
+        if not profile_data:
+            raise HTTPException(status_code=404, detail="Profile not found")
+        
         # Prepare input data
         input_data = {
             "company_name": company_name,
             "job_title": job_title,
             "job_description": job_description,
-            "resume_info": RESUME_INFO,  # Use the predefined resume info
-            "project_descriptions": PROJECT_DESCRIPTIONS
+            "resume_info": profile_data["resume_info"],
+            "project_descriptions": profile_data["project_descriptions"]
         }
         
         # Generate cover letter using the orchestrator
@@ -127,6 +243,8 @@ async def generate_cover_letter(
                 detail=f"Failed to generate cover letter: {result.get('error', 'Unknown error')}"
             )
     
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating cover letter: {str(e)}")
 
